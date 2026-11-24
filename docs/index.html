@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WeChat Agent Bridge — Awwwards-Grade Promotional Motion Film</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/promo.css" />
+</head>
+<body>
+  <!-- Custom Precision Reticle Cursor -->
+  <div class="reticle-cursor" id="reticleCursor" aria-hidden="true">
+    <div class="reticle-ring"></div>
+    <div class="reticle-dot"></div>
+  </div>
+
+  <!-- Fullscreen WebGL Aurora Shader + 3D Geometry Stage -->
+  <canvas id="bgShaderCanvas" class="stage-canvas" aria-hidden="true"></canvas>
+  <canvas id="fg3dCanvas" class="stage-canvas" aria-hidden="true"></canvas>
+
+  <!-- Subtle Film Grain & Vignette Atmosphere -->
+  <div class="film-vignette" aria-hidden="true"></div>
+  <div class="film-scanlines" aria-hidden="true"></div>
+
+  <!-- Architectural Hairline Grid (Grids — Obys inspired) -->
+  <div class="arch-grid" id="archGrid" aria-hidden="true">
+    <div class="arch-vlines">
+      <span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <div class="arch-hlines">
+      <span></span><span></span><span></span><span></span>
+    </div>
+    <div class="arch-coord top-left">SYS // 127.0.0.1:5200</div>
+    <div class="arch-coord top-right">SQLCIPHER 4 · READ-ONLY</div>
+    <div class="arch-coord bottom-left">60FPS · LOCAL-FIRST</div>
+    <div class="arch-coord bottom-right" id="archAngleCoord">CAM Z: +4.80 · FOV 52°</div>
+  </div>
+
+  <!-- Top Cinema HUD Header -->
+  <header class="hud-top">
+    <div class="brand-lockup">
+      <div class="brand-emblem">
+        <span class="emblem-pulse"></span>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L20.5 7V17L12 22L3.5 17V7L12 2Z" />
+          <circle cx="12" cy="12" r="3" fill="currentColor" stroke="none" />
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">WECHAT AGENT BRIDGE</span>
+        <span class="brand-tag">DIRECTOR'S CUT · 2026</span>
+      </div>
+    </div>
+
+    <div class="hud-center-status">
+      <span class="rec-dot" id="playStateDot"></span>
+      <span class="act-indicator" id="hudActLabel">ACT 01 // ARCHITECTURAL HOOK</span>
+      <span class="hud-sep">|</span>
+      <span class="timecode" id="hudTimecode">00:00.00 / 00:42.00</span>
+    </div>
+
+    <div class="hud-actions">
+      <a class="hud-pill" href="https://github.com/shisisishi/wechat-agent-bridge" target="_blank" rel="noopener noreferrer" style="text-decoration:none" title="访问 GitHub 开源仓库">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        <span>GitHub</span>
+      </a>
+      <button class="hud-pill" id="btnSound" type="button" title="切换程序化电影音效 (M)">
+        <span class="sound-bars" id="soundBars">
+          <i></i><i></i><i></i>
+        </span>
+        <span id="soundLabel">音效 OFF</span>
+      </button>
+      <button class="hud-pill" id="btnCredits" type="button" title="查看 Awwwards 动效灵感来源">
+        <span class="pill-spark">✦</span>
+        <span>Awwwards 灵感</span>
+      </button>
+      <button class="hud-pill accent-pill" id="btnRecord" type="button" title="录制当前宣传动画并导出 WebM 视频">
+        <span class="rec-circle"></span>
+        <span id="recordLabel">导出视频</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Safe Viewport Stage (All 6 Acts Choreographed Deterministically) -->
+  <main class="cinema-stage" id="cinemaStage">
+
+    <!-- =========================================================
+         ACT 01: ARCHITECTURAL GRID & KINETIC TYPOGRAPHY HOOK
+         Awwwards Ref: Grids (Obys) + PVN Liquid Chromatic Title
+         ========================================================= -->
+    <section class="act act-1" id="act1" data-act="1">
+      <div class="act1-preloader-row">
+        <div class="mono-badge">
+          <span class="live-beacon"></span>
+          <span>WECHAT 4.x · LOCAL AI NEURAL BRIDGE</span>
+        </div>
+        <div class="loader-meter">
+          <div class="loader-track"><div class="loader-fill" id="act1LoaderFill"></div></div>
+          <span class="loader-pct" id="act1LoaderPct">000%</span>
+        </div>
+      </div>
+
+      <div class="hero-headline-wrap">
+        <div class="mask-line">
+          <h1 class="hero-line liquid-shimmer" id="act1Line1">让微信聊天记录</h1>
+        </div>
+        <div class="mask-line">
+          <h1 class="hero-line hero-line-emerald" id="act1Line2">直连你的本机 AI</h1>
+        </div>
+      </div>
+
+      <div class="act1-subrow" id="act1Subrow">
+        <p class="hero-subtitle">
+          零 DLL 注入 · 纯本机离线直连 · 14 个原生 MCP 工具 · 静默小模型巡检 · 手机物理隔离双向同步
+        </p>
+        <div class="spec-chips">
+          <span class="spec-chip"><strong>0</strong> 云端上传</span>
+          <span class="spec-chip"><strong>14</strong> MCP 工具</span>
+          <span class="spec-chip"><strong>7</strong> 大本机 Agent</span>
+          <span class="spec-chip"><strong>24/7</strong> 离线待办进化</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         ACT 02: THROUGH THE CIPHER ORB — LOCAL READ-ONLY DECRYPTION
+         Awwwards Ref: Apekon ("Through the orb: break transition")
+         ========================================================= -->
+    <section class="act act-2" id="act2" data-act="2">
+      <div class="act2-top-hud">
+        <span class="eyebrow-mono">ACT 02 // ZERO-INJECTION LOCAL DECRYPTION</span>
+        <div class="cipher-status-pill" id="cipherStatusPill">
+          <span class="cipher-led"></span>
+          <span id="cipherStatusText">SCANNING · SQLCIPHER 4 MEMORY</span>
+        </div>
+      </div>
+
+      <div class="act2-orb-frame">
+        <div class="orb-reticle" id="orbReticle">
+          <span class="corner tl">+</span>
+          <span class="corner tr">+</span>
+          <span class="corner bl">+</span>
+          <span class="corner br">+</span>
+          <div class="orb-ring-dashed"></div>
+          <div class="orb-center-readout">
+            <div class="scramble-code" id="act2ScrambleCode">AES-256-CBC · 0x7F9A..E4</div>
+            <div class="orb-big-metric" id="act2DbCounter">00 / 20 DB</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="act2-bottom-copy">
+        <h2 class="act-title-sm" id="act2Title">只读内存取密，零侵入离线直连微信 4.x</h2>
+        <div class="act2-pillars">
+          <div class="pillar-item">
+            <span class="pillar-idx">01</span>
+            <span>仅调用只读 <code>ReadProcessMemory</code>，不注入 DLL</span>
+          </div>
+          <div class="pillar-item">
+            <span class="pillar-idx">02</span>
+            <span>自动识别 <code>xwechat_files</code> 全部 20 个加密库</span>
+          </div>
+          <div class="pillar-item">
+            <span class="pillar-idx">03</span>
+            <span>纯本机 <code>127.0.0.1</code> 闭环，数据永不出电脑</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         ACT 03: THE MCP CONSTELLATION — 14 TOOLS × 7 LOCAL AGENTS
+         Awwwards Ref: Cyera AI Guardian (Active Theory)
+         ========================================================= -->
+    <section class="act act-3" id="act3" data-act="3">
+      <div class="act3-editorial">
+        <span class="eyebrow-mono">ACT 03 // MCP PROTOCOL CONSTELLATION</span>
+        <h2 class="editorial-h2">
+          <span class="line-reveal">14 个原生工具</span>
+          <span class="line-reveal text-emerald">唤醒 7 大本机 Agent</span>
+        </h2>
+        <p class="editorial-desc">
+          不再一条条复制粘贴给 AI。一键写入标准 MCP 协议配置，让本机所有智能体按需检索会话、交叉比对、生成趋势与年度洞察。
+        </p>
+
+        <div class="mcp-tool-stream" id="mcpToolStream">
+          <span class="mcp-tag" data-idx="0">list_sessions()</span>
+          <span class="mcp-tag" data-idx="1">search_messages()</span>
+          <span class="mcp-tag" data-idx="2">get_chat_stats()</span>
+          <span class="mcp-tag" data-idx="3">get_timeline()</span>
+          <span class="mcp-tag" data-idx="4">get_keyword_trend()</span>
+          <span class="mcp-tag" data-idx="5">get_year_report()</span>
+          <span class="mcp-tag" data-idx="6">export_chat()</span>
+          <span class="mcp-tag" data-idx="7">refresh_data()</span>
+        </div>
+      </div>
+
+      <div class="constellation-hud" id="constellationHud">
+        <div class="core-label" id="constellationCoreLabel">
+          <span class="core-kicker">MCP CORE</span>
+          <strong>14 TOOLS</strong>
+        </div>
+        <div class="agent-node" data-agent="0">
+          <span class="agent-dot"></span>
+          <div class="agent-meta"><strong>Claude Code</strong><span>CLI · MCP STDIO</span></div>
+        </div>
+        <div class="agent-node" data-agent="1">
+          <span class="agent-dot"></span>
+          <div class="agent-meta"><strong>Codex CLI</strong><span>EXEC + IMAGE</span></div>
+        </div>
+        <div class="agent-node" data-agent="2">
+          <span class="agent-dot"></span>
+          <div class="agent-meta"><strong>Antigravity</strong><span>NATIVE MCP</span></div>
+        </div>
+        <div class="agent-node" data-agent="3">
+          <span class="agent-dot"></span>
+          <div class="agent-meta"><strong>OpenClaw</strong><span>AUTOMATION</span></div>
+        </div>
+        <div class="agent-node" data-agent="4">
+          <span class="agent-dot"></span>
+          <div class="agent-meta"><strong>Obsidian</strong><span>MD KNOWLEDGE</span></div>
+        </div>
+        <div class="agent-node" data-agent="5">
+          <span class="agent-dot"></span>
+          <div class="agent-meta"><strong>Ollama 3B</strong><span>LOCAL FILTER</span></div>
+        </div>
+        <div class="agent-node" data-agent="6">
+          <span class="agent-dot"></span>
+          <div class="agent-meta"><strong>Webhook</strong><span>CUSTOM PIPE</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         ACT 04: SILENT LOCAL AI FUNNEL — PROMPT-TO-TODO FLIP MORPH
+         Awwwards Ref: Cheese AI (WebGL Orb + UI FLIP Morph)
+         ========================================================= -->
+    <section class="act act-4" id="act4" data-act="4">
+      <div class="act4-header">
+        <span class="eyebrow-mono">ACT 04 // OFFLINE QWEN 3B · 3-LAYER NOISE FILTER</span>
+        <h2 class="act4-title">离线小模型静默巡检，<span class="text-emerald">从百条水群提炼关键待办</span></h2>
+      </div>
+
+      <div class="act4-stage">
+        <div class="noise-stream" id="noiseStream">
+          <div class="chat-chip noise" data-kind="noise">
+            <span class="chip-tag muted">水群闲聊</span>
+            <span>哈哈哈今晚吃什么呀 [表情] [表情]</span>
+          </div>
+          <div class="chat-chip signal" data-kind="signal" data-sig="0">
+            <span class="chip-tag emerald">产品核心群</span>
+            <span>@全体成员 明晚 20:00 前请提交 V2.4 架构评审终稿 PDF</span>
+          </div>
+          <div class="chat-chip noise" data-kind="noise">
+            <span class="chip-tag muted">企业推广</span>
+            <span>🔥 限时 3 折大促最后 2 小时，点击立即领取！</span>
+          </div>
+          <div class="chat-chip signal" data-kind="signal" data-sig="1">
+            <span class="chip-tag cyan">研发同步群</span>
+            <span>周五 10:00 性能压测复盘会，需提前导出近 14 天监控曲线</span>
+          </div>
+          <div class="chat-chip noise" data-kind="noise">
+            <span class="chip-tag muted">接龙刷屏</span>
+            <span>收到 +1 / 收到 +1 / 收到 +1（共 28 条已折叠）</span>
+          </div>
+          <div class="chat-chip signal" data-kind="signal" data-sig="2">
+            <span class="chip-tag indigo">设计协作</span>
+            <span>新版图标切图已上传云盘，今晚确认动效曲线参数</span>
+          </div>
+        </div>
+
+        <div class="morph-shell" id="morphShell">
+          <div class="morph-pill-face" id="morphPillFace">
+            <div class="mini-orb-glow"></div>
+            <div class="pill-copy">
+              <div class="pill-title">Ollama · Qwen 2.5 3B 离线推理引擎</div>
+              <div class="pill-sub" id="morphPillStatus">三层防噪过滤中 · 严格 JSON Schema · 30s 自动释放显存</div>
+            </div>
+            <div class="pill-stats">
+              <span>0¥ 成本</span>
+              <span>离线 100%</span>
+            </div>
+          </div>
+
+          <div class="morph-todo-face" id="morphTodoFace">
+            <div class="todo-topbar">
+              <div class="todo-brand">
+                <span class="live-beacon"></span>
+                <strong>实时待办清单</strong>
+                <span class="todo-badge">AUTO-SYNC · EVERY 1H</span>
+              </div>
+              <div class="todo-progress-wrap">
+                <span class="todo-pct" id="todoPctText">66%</span>
+                <div class="todo-bar"><div class="todo-bar-fill" id="todoBarFill"></div></div>
+              </div>
+            </div>
+
+            <div class="todo-list">
+              <div class="todo-item" id="todoItem1">
+                <div class="todo-check" id="todoCheck1">
+                  <svg viewBox="0 0 18 18" width="14" height="14">
+                    <path id="todoCheckPath" d="M3.5 9.5L7.2 13.2L14.5 5.2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </div>
+                <div class="todo-body">
+                  <div class="todo-line">
+                    <span class="prio high">高优</span>
+                    <span class="todo-text" id="todoText1">提交 V2.4 架构评审终稿 PDF</span>
+                  </div>
+                  <div class="todo-meta">来源：产品核心群 · 截止：明晚 20:00 · 相似度去重已通过</div>
+                </div>
+              </div>
+
+              <div class="todo-item" id="todoItem2">
+                <div class="todo-check"></div>
+                <div class="todo-body">
+                  <div class="todo-line">
+                    <span class="prio high">高优</span>
+                    <span class="todo-text">导出近 14 天性能压测曲线备会</span>
+                  </div>
+                  <div class="todo-meta">来源：研发同步群 · 截止：周五 10:00</div>
+                </div>
+              </div>
+
+              <div class="todo-item" id="todoItem3">
+                <div class="todo-check"></div>
+                <div class="todo-body">
+                  <div class="todo-line">
+                    <span class="prio normal">普通</span>
+                    <span class="todo-text">确认新版动效曲线参数与图标切图</span>
+                  </div>
+                  <div class="todo-meta">来源：设计协作 · 截止：今晚</div>
+                </div>
+              </div>
+            </div>
+
+            <canvas id="confettiCanvas" class="confetti-canvas" width="480" height="260"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         ACT 05: CURVED LIQUID GLASS STUDIO — OBSIDIAN JADE DASHBOARD
+         Awwwards Ref: Piven Ilya (PVN) Curved Glass Carousel + HUD Reticles
+         ========================================================= -->
+    <section class="act act-5" id="act5" data-act="5">
+      <div class="act5-header">
+        <span class="eyebrow-mono">ACT 05 // OBSIDIAN JADE · LIQUID GLASS WORKSPACE</span>
+        <h2 class="act5-title">曜石翡翠液态玻璃，<span class="text-emerald">60fps 交互洞察工作台</span></h2>
+      </div>
+
+      <div class="curved-stage" id="curvedStage">
+        <div class="pvn-hud-frame" id="pvnHudFrame">
+          <i class="ret-c tl">+</i>
+          <i class="ret-c tr">+</i>
+          <i class="ret-c bl">+</i>
+          <i class="ret-c br">+</i>
+          <span class="pvn-caption" id="pvnCaption">02 / 03 · 曜石翡翠 ⇄ 瓷雾浅色 · 水波纹双主题</span>
+        </div>
+
+        <div class="curved-track" id="curvedTrack">
+          <article class="glass-card" id="glassCard0" data-card="0">
+            <div class="card-specular"></div>
+            <div class="card-head">
+              <span class="card-idx">01 // ANALYTICS</span>
+              <span class="card-pill">24H 活跃热力图</span>
+            </div>
+            <div class="kpi-strip">
+              <div class="kpi-box">
+                <small>总消息量</small>
+                <strong id="kpiMsgCount">142,860</strong>
+              </div>
+              <div class="kpi-box">
+                <small>活跃会话</small>
+                <strong>286</strong>
+              </div>
+              <div class="kpi-box">
+                <small>响应均速</small>
+                <strong class="text-cyan">42s</strong>
+              </div>
+            </div>
+            <div class="heatmap-grid" id="heatmapGrid"></div>
+            <div class="trend-chart-wrap">
+              <svg viewBox="0 0 320 76" class="trend-svg" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="trendGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#07c160" stop-opacity="0.45" />
+                    <stop offset="100%" stop-color="#07c160" stop-opacity="0.0" />
+                  </linearGradient>
+                </defs>
+                <path class="trend-area" d="M0,66 C32,58 55,24 92,34 C128,44 155,14 196,22 C238,30 272,8 320,16 L320,76 L0,76 Z" fill="url(#trendGrad)" />
+                <path id="trendLinePath" class="trend-line" d="M0,66 C32,58 55,24 92,34 C128,44 155,14 196,22 C238,30 272,8 320,16" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" />
+              </svg>
+            </div>
+          </article>
+
+          <article class="glass-card" id="glassCard1" data-card="1">
+            <div class="card-specular"></div>
+            <div class="theme-ripple-layer" id="themeRippleLayer"></div>
+            <div class="card-head">
+              <span class="card-idx">02 // WORKBENCH</span>
+              <span class="card-pill emerald">127.0.0.1:5200</span>
+            </div>
+            <div class="mock-nav">
+              <div class="mock-nav-pill" id="mockNavPill"></div>
+              <span class="mock-tab active" data-tab="0">会话流</span>
+              <span class="mock-tab" data-tab="1">统计中心</span>
+              <span class="mock-tab" data-tab="2">高频词云</span>
+              <span class="mock-tab" data-tab="3">MCP 状态</span>
+            </div>
+            <div class="mock-chat-area">
+              <div class="bubble other">
+                <span class="b-name">架构组 · Lin</span>
+                <p>本周 MCP 工具链路全部压测通过，平均检索耗时 18ms</p>
+              </div>
+              <div class="bubble self">
+                <p>太棒了！已自动同步至桌面待办浮窗与手机端 ✨</p>
+              </div>
+              <div class="bubble other">
+                <span class="b-name">产品组 · Mia</span>
+                <p>导出 HTML 报告和 24h 热力图在深浅双主题下都超丝滑</p>
+              </div>
+            </div>
+            <div class="mock-footer">
+              <span class="dot-online"></span>
+              <span>本地实时解密刷新 · 每 60 秒增量同步</span>
+            </div>
+          </article>
+
+          <article class="glass-card" id="glassCard2" data-card="2">
+            <div class="card-specular"></div>
+            <div class="card-head">
+              <span class="card-idx">03 // DESKTOP HUD</span>
+              <span class="card-pill cyan">置顶半透明浮窗</span>
+            </div>
+            <div class="export-badges">
+              <span class="exp-badge">TXT</span>
+              <span class="exp-badge">JSON</span>
+              <span class="exp-badge">HTML</span>
+              <span class="exp-badge">MARKDOWN</span>
+            </div>
+            <div class="mini-hud-cards">
+              <div class="mini-hud-row">
+                <span class="hud-ico">⚡</span>
+                <div>
+                  <strong>Ctrl + Alt + W 全局抓取</strong>
+                  <small>剪贴板 + 拖拽悬浮球 + Win11 ShareTarget</small>
+                </div>
+              </div>
+              <div class="mini-hud-row">
+                <span class="hud-ico">🎯</span>
+                <div>
+                  <strong>3D 视差光影卡片</strong>
+                  <small>光标聚光高光 + 弹簧阻尼微交互</small>
+                </div>
+              </div>
+              <div class="mini-hud-row">
+                <span class="hud-ico">🛡️</span>
+                <div>
+                  <strong>极光双主题水波纹切换</strong>
+                  <small>View Transition API 圆形扩散过渡</small>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         ACT 06: AIR-GAPPED MOBILE SYNC FLYTHROUGH & HERO FINALE
+         Awwwards Ref: Focus Industries (3D Flythrough + Aerospace HUD) + Grids Closing
+         ========================================================= -->
+    <section class="act act-6" id="act6" data-act="6">
+      <div class="act6-arch-scene" id="act6ArchScene">
+        <div class="act6-header">
+          <span class="eyebrow-mono">ACT 06 // PHYSICAL AIR-GAP · MOBILE HTTPS SYNC</span>
+          <h2 class="act6-title">聊天记录锁死本机，<span class="text-emerald">待办清单随身秒级同步</span></h2>
+        </div>
+
+        <div class="airgap-diagram">
+          <div class="vault-card" id="vaultCard">
+            <div class="vault-badge">LOCAL ONLY · 127.0.0.1:5200</div>
+            <div class="vault-icon">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8">
+                <rect x="4" y="11" width="16" height="10" rx="2" />
+                <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+              </svg>
+            </div>
+            <h3>微信聊天记录金库</h3>
+            <p>公网完全不可达 · <code>/api/messages</code> 严格拦截返回 <code>404</code></p>
+            <div class="vault-tags">
+              <span>SQLite 本地库</span>
+              <span>零公网暴露</span>
+            </div>
+          </div>
+
+          <div class="tunnel-bridge">
+            <div class="airgap-wall">
+              <span class="wall-label">AIR-GAP ISOLATION</span>
+            </div>
+            <div class="tunnel-pipe">
+              <div class="pipe-label">PORT 5201 · HTTPS AUTO-HEAL TUNNEL</div>
+              <div class="pipe-track">
+                <div class="pipe-pulse p1"></div>
+                <div class="pipe-pulse p2"></div>
+                <div class="pipe-pulse p3"></div>
+              </div>
+              <div class="pipe-sub">HttpOnly + Secure Cookie · 休眠断线自动重建</div>
+            </div>
+          </div>
+
+          <div class="phone-mockup" id="phoneMockup">
+            <div class="phone-notch"></div>
+            <div class="phone-screen">
+              <div class="phone-top">
+                <span>SYNCED · 4G/5G</span>
+                <span class="phone-led"></span>
+              </div>
+              <div class="phone-title">随身待办同步</div>
+              <div class="phone-task done">
+                <i>✓</i><span>提交架构评审终稿 PDF</span>
+              </div>
+              <div class="phone-task active" id="phoneLiveTask">
+                <i></i><span>导出 14 天性能压测曲线</span>
+              </div>
+              <div class="phone-task">
+                <i></i><span>确认动效曲线参数</span>
+              </div>
+              <div class="phone-toast" id="phoneToast">⚡ 电脑端刚刚同步 +1</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="act6-finale" id="act6Finale">
+        <div class="finale-eyebrow">LOCAL-FIRST · ZERO-INJECTION · ALWAYS IN SYNC</div>
+        <h2 class="finale-wordmark">WeChat Agent Bridge</h2>
+        <p class="finale-tagline">把沉睡在微信里的千万条对话，变成你 24 小时在线的私人本地 AI 神经系统。</p>
+        <div class="finale-ctas">
+          <button class="cta-btn primary" id="btnReplayFinale" type="button">↻ 重播完整宣传片</button>
+          <a class="cta-btn ghost" href="https://github.com/shisisishi/wechat-agent-bridge" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;text-decoration:none">★ 查看 GitHub 源码</a>
+          <button class="cta-btn ghost" id="btnExploreFinale" type="button">✦ 查看 6 大 Awwwards 动效拆解</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Cinema Timeline & Chapter Scrubber -->
+  <footer class="hud-bottom">
+    <div class="transport-row">
+      <button class="icon-btn" id="btnPlayPause" type="button" title="播放 / 暂停 (Space)">
+        <svg id="iconPause" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+          <rect x="6" y="4" width="4" height="16" rx="1" />
+          <rect x="14" y="4" width="4" height="16" rx="1" />
+        </svg>
+        <svg id="iconPlay" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="display:none">
+          <path d="M6 4l14 8-14 8V4z" />
+        </svg>
+      </button>
+      <button class="icon-btn" id="btnRestart" type="button" title="从头播放 (R)">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+          <path d="M3 3v5h5" />
+        </svg>
+      </button>
+
+      <div class="timeline-wrap" id="timelineWrap">
+        <div class="chapter-pills" id="chapterPills">
+          <button class="chap-btn active" data-time="0.4">01 网格序幕</button>
+          <button class="chap-btn" data-time="6.2">02 穿透解密</button>
+          <button class="chap-btn" data-time="13.5">03 MCP 星图</button>
+          <button class="chap-btn" data-time="21.5">04 静默变形</button>
+          <button class="chap-btn" data-time="29.5">05 曲面玻璃</button>
+          <button class="chap-btn" data-time="36.2">06 隔离同步</button>
+        </div>
+        <div class="scrubber-rail" id="scrubberRail">
+          <div class="scrubber-fill" id="scrubberFill"></div>
+          <div class="scrubber-thumb" id="scrubberThumb"></div>
+        </div>
+      </div>
+
+      <div class="controls-hint">滚轮 / 拖动可任意逐帧检视</div>
+    </div>
+  </footer>
+
+  <!-- Awwwards Inspiration & Breakdown Drawer -->
+  <aside class="credits-drawer" id="creditsDrawer" aria-hidden="true">
+    <div class="credits-backdrop" id="creditsBackdrop"></div>
+    <div class="credits-panel">
+      <div class="credits-head">
+        <div>
+          <span class="eyebrow-mono">AWWWARDS MOTION DNA</span>
+          <h3>本片采用的 6 大 Awwwards 顶级动效技法</h3>
+        </div>
+        <button class="icon-btn" id="btnCloseCredits" type="button">✕</button>
+      </div>
+      <div class="credits-list">
+        <div class="credit-card" data-jump="0.8">
+          <div class="credit-top"><strong>01 · Grids</strong><span>Obys · SOTD 7.63</span></div>
+          <p>发丝级建筑辅助网格 + <code>clip-path</code> 极速指数缓动排版揭示 + 精密进度标尺。</p>
+        </div>
+        <div class="credit-card" data-jump="8.2">
+          <div class="credit-top"><strong>02 · Through The Orb</strong><span>Apekon · Transition</span></div>
+          <p>3D 三角网格密码球体，在场景转场时推镜直接「穿透球体」切入下一空间。</p>
+        </div>
+        <div class="credit-card" data-jump="15.0">
+          <div class="credit-top"><strong>03 · Cyera AI Guardian</strong><span>Active Theory · SOTD</span></div>
+          <p>深空 3D 轨道星图，中央 MCP 核心与 7 大本机 Agent 节点以发光能量脉冲互联。</p>
+        </div>
+        <div class="credit-card" data-jump="23.5">
+          <div class="credit-top"><strong>04 · Cheese AI</strong><span>CHEESE DESIGN · WebGL</span></div>
+          <p>杂讯气泡吸附至 AI 光球胶囊后，以弹性 FLIP 变形无缝展开为实时待办面板与微彩带特效。</p>
+        </div>
+        <div class="credit-card" data-jump="31.5">
+          <div class="credit-top"><strong>05 · Curved Glass Carousel</strong><span>Piven Ilya (PVN)</span></div>
+          <p>柱面透视液态玻璃画廊、四隅 1px <code>+</code> 光学准星框、边缘高光扫掠与水波纹双主题。</p>
+        </div>
+        <div class="credit-card" data-jump="37.0">
+          <div class="credit-top"><strong>06 · Focus Industries</strong><span>Federico &amp; GA · 3D</span></div>
+          <p>空间飞行镜头衔接工业级双端口物理隔离架构图，展示 5200 本地金库与 5201 手机加密同步。</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Zero-CORS Classic Deferred Scripts -->
+  <script defer src="js/webgl-stage.js"></script>
+  <script defer src="js/sound-engine.js"></script>
+  <script defer src="js/director.js"></script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+{
+  "name": "wechat-cli",
+  "version": "1.0.0",
+  "description": "WeChat chat data MCP server - extract and query WeChat PC database for AI tools",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "wechat-cli": "dist/index.js"
+  },
+  "files": [
+    "dist/",
+    "python/",
+    "src/web/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx --watch src/index.ts",
+    "dev:web": "tsx --watch src/index.ts web",
+    "start": "node dist/index.js",
+    "start:web": "node dist/index.js web",
+    "inspector": "npx @modelcontextprotocol/inspector tsx src/index.ts",
+    "lint": "eslint src/",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "wechat",
+    "mcp",
+    "ai",
+    "chat-history",
+    "sqlite",
+    "model-context-protocol"
+  ],
+  "author": "wyler",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitee.com/wyler_admin/wechat-cli.git"
+  },
+  "homepage": "https://gitee.com/wyler_admin/wechat-cli",
+  "bugs": {
+    "url": "https://gitee.com/wyler_admin/wechat-cli/issues"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.9.2",
+    "eslint": "^10.4.1",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.61.0",
+    "vitest": "^4.1.8"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "hono": "^4.12.25",
+    "koffi": "^3.0.2",
+    "sql.js": "^1.14.1",
+    "zod": "^3.25.0",
+    "zstd-codec": "^0.1.5"
+  }
+}

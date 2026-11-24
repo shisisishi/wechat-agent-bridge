@@ -1,0 +1,51 @@
+# Secrets, keys, local credentials & decrypted WeChat databases (NEVER commit!)
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.xml
+all_keys.json
+keys.json
+creds/
+decrypted/
+third_party/wechat-cli/decrypted/
+third_party/wechat-cli/python/all_keys.json
+third_party/wechat-cli/.env
+
+# Local databases, runtime state & logs
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+*.log
+*.tmp
+*.pid
+status/
+seed/
+sync_pool/
+proxies.json
+sync-config.json
+
+# Binaries & build outputs
+third_party/bin/
+*.exe
+*.dll
+node_modules/
+dist/
+build/
+
+# Python caches & virtual environments
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# OS & editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
